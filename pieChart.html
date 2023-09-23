@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pie Chart Example</title>
-    <!-- Include Chart.js library -->
+    <title>Pie Chart</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="fetchData.js"></script>
     <script src="dataProcessing.js"></script>
@@ -15,27 +14,19 @@
     </div>
     <div>
         <button id="filterButton">Filter by Month</button>
-        <select id="monthSelect">
-            <option value="0">January</option>
-            <option value="1">February</option>
-            <option value="2">March</option>
-            <option value="3">May</option>
+        <select id="monthSelect">           
             <option value="4">April</option>
             <option value="5">June</option>
             <option value="6">July</option>
             <option value="7">August</option>
             <option value="8">September</option>
-            <option value="9">October</option>
-            <option value="10">November</option>
-            <option value="11">December</option>
-            <!-- Add more months as needed -->
+            <!-- Since there are just 5 months of invoices in API-->
         </select>
     </div>
 
     <script>
         const ctx = document.getElementById('pieChart').getContext('2d');
         let myPieChart;
-        //let invoiceData;
         let itemLabels;
         
         function updateChartByMonth(selectedMonth) {
@@ -44,13 +35,11 @@
                 return;
             }
 
-            // Example usage: Filter data for the selected month
-            const filteredData = filterDataByMonth(invoiceData, selectedMonth);
-
-            // Example usage: Calculate the top 10 items by quantity sold
+            const filteredData = filterDataByMonth(invoiceData,selectedMonth);
+           
             const top10Items = calculateTop10Items(filteredData);
 
-            // Example usage: Update the chart with the top 10 items
+            //Update the chart with the top 10 items
             updateChart(top10Items, itemLabels);
         }
         document.getElementById('filterButton').addEventListener('click', () => {
@@ -62,13 +51,9 @@
             invoiceData = await fetchAllInvoices();
             const itemDataResponse = await fetchAllItems();
             itemLabels = {};
-            console.log("invoice data : ", invoiceData)
             itemDataResponse.items.forEach(item => {
                 itemLabels[item.id.toString()] = item.name;
             });
-
-            // Initial chart rendering (you can choose the default month here)
-            updateChartByMonth(5);
         });
         
         async function initializeChart() {
@@ -81,7 +66,7 @@
                     itemLabels[item.id.toString()] = item.name;
                 });
 
-                // Initial chart rendering (you can choose the default month here)
+                // Default month
                 updateChartByMonth(5);
             } catch (error) {
                 console.error('Error initializing chart:', error);
@@ -92,9 +77,8 @@
         window.addEventListener('load', fetchInvoiceData);
 
         function updateChart(top10ItemsData,itemLabels) {
-        //console.log("Tom 10 : ", top10ItemsData)
         if (myPieChart) {
-            myPieChart.destroy(); // Destroy the existing chart to create a new one
+            myPieChart.destroy();
         }
 
         const labels = top10ItemsData.map(item => itemLabels[item.item_id]);

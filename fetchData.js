@@ -1,5 +1,4 @@
     
-        let invoiceData;
         // Function to fetch data from a given URL
         async function fetchData(url) {
             const response = await fetch(url);
@@ -11,9 +10,6 @@
         async function fetchCustomers() {
             try {
                 const data = await fetchData('http://localhost:3000/api/customers');
-
-                // Log the customer data to the console
-                console.log('Customer data:', data);
             } catch (error) {
                 console.error('Error fetching customer data:', error);
             }
@@ -51,14 +47,14 @@
                 allInvoiceRows = allInvoiceRows.concat(data.results);
                 nextPage = data.next; 
             }
-            console.log('Invoice rows:', allInvoiceRows);
+            //console.log('Invoice rows:', allInvoiceRows);
             return allInvoiceRows;
         }
 
         async function fetchInvoiceData() {
             try {
                 // Fetch invoice data
-                invoiceData = await fetchAllInvoices();
+                let invoiceData = await fetchAllInvoices();
 
                 const itemDataResponse = await fetchAllItems();
                 const itemData = itemDataResponse.items;
@@ -74,7 +70,7 @@
                 
                 // Example usage: Calculate the top 10 items by quantity sold
                 const top10Items = calculateTop10Items(filteredData);
-                console.log("Top10 : ", top10Items);
+                //console.log("Top10 : ", top10Items);
                 // Example usage: Update the chart with the top 10 items
                 updateChart(top10Items,itemLabels);
             } catch (error) {

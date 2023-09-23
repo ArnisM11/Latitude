@@ -1,7 +1,11 @@
+
 function filterDataByMonth(data, selectedMonth) {
-    return data.filter(item => {
-        const invoiceDate = new Date(item.invoice_date);
-        return invoiceDate.getMonth() === selectedMonth;
+    return data.filter(invoice => {
+        if (invoice.invoice_date) {
+            const invoiceDate = new Date(invoice.invoice_date);
+            return invoiceDate.getMonth() === parseInt(selectedMonth);
+        }
+        return false; // Filter out invoices without a date property
     });
 }
 
@@ -9,7 +13,6 @@ function filterDataByMonth(data, selectedMonth) {
 function calculateTop10Items(data) {
     // Create a dictionary to store item quantities
     const itemQuantities = {};
-    //console.log("data : ", data )
     // Iterate through the invoice rows and calculate item quantities
     data.forEach((invoice) => {
         invoice.rows.forEach((row) => {
