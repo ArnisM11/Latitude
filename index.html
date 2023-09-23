@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pie Chart Example</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="fetchData.js"></script>
+    <script src="dataProcessing.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Create a canvas element for the pie chart -->
+    <div>
+        <canvas id="pieChart" width="400" height="400"></canvas>
+    </div>
+    <div>
+        <button id="filterButton">Filter by Month</button>
+        <select id="monthSelect">
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">May</option>
+            <option value="4">April</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+            <!-- Add more months as needed -->
+        </select>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        let myPieChart;
+        //let invoiceData;
+        let itemLabels;
+        
+        function updateChartByMonth(selectedMonth) {
+            if (!invoiceData || !itemLabels) {
+                console.error('Data not loaded');
+                return;
+            }
+
+            // Example usage: Filter data for the selected month
+            const filteredData = filterDataByMonth(invoiceData, selectedMonth);
+
+            // Example usage: Calculate the top 10 items by quantity sold
+            const top10Items = calculateTop10Items(filteredData);
+
+            // Example usage: Update the chart with the top 10 items
+            updateChart(top10Items, itemLabels);
+        }
+        document.getElementById('filterButton').addEventListener('click', () => {
+            const selectedMonth = document.getElementById('monthSelect').value;
+            updateChartByMonth(selectedMonth);
+        });
+
+        window.addEventListener('load', async () => {
+            invoiceData = await fetchAllInvoices();
+            const itemDataResponse = await fetchAllItems();
+            itemLabels = {};
+            console.log("invoice data : ", invoiceData)
+            itemDataResponse.items.forEach(item => {
+                itemLabels[item.id.toString()] = item.name;
+            });
+
+            // Initial chart rendering (you can choose the default month here)
+            updateChartByMonth(5);
+        });
+        
+        async function initializeChart() {
+            try {
+                invoiceData = await fetchAllInvoices();
+                const itemDataResponse = await fetchAllItems();
+                itemLabels = {};
+
+                itemDataResponse.items.forEach(item => {
+                    itemLabels[item.id.toString()] = item.name;
+                });
+
+                // Initial chart rendering (you can choose the default month here)
+                updateChartByMonth(5);
+            } catch (error) {
+                console.error('Error initializing chart:', error);
+            }
+        }
+
+        window.addEventListener('load', initializeChart);
+        window.addEventListener('load', fetchInvoiceData);
+
+        function updateChart(top10ItemsData,itemLabels) {
+        //console.log("Tom 10 : ", top10ItemsData)
+        if (myPieChart) {
+            myPieChart.destroy(); // Destroy the existing chart to create a new one
+        }
+
+        const labels = top10ItemsData.map(item => itemLabels[item.item_id]);
+        const data = top10ItemsData.map(item => item.quantity);
+
+        myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                data: data,
+                backgroundColor: ['red', 'blue', 'green', 'orange', 'purple','pink','black','orange','yellow','brown'],
+            }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+            });
+        }
+        
+    </script>
+
+    
+</body>
+</html>

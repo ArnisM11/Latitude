@@ -1,0 +1,21 @@
+.container {
+    display: flex; /* Use flexbox layout */
+    justify-content: center; /* Center the button horizontally */
+    align-items: center; /* Center the button vertically */
+    margin-bottom: 20px; /* Add margin to separate the button from the chart */
+  }
+
+#filterButton {
+  font-size: 16px;
+}
+
+/* Adjust the padding to increase the button's width */
+#filterButton {
+  padding: 10px 20px;
+}
+
+/* Adjust the margin to increase the button's height */
+#filterButton {
+  margin: 10px 0;
+}
+  
