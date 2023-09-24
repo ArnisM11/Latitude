@@ -6,8 +6,13 @@
     <script src="fetchData.js"></script>
     <script src="dataProcessing.js"></script>
     <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
+    <div id="loadingIndicator" class="hidden">
+        <!-- Add your loading indicator here (e.g., spinner or message) -->
+        Loading...
+    </div>
     <!-- Create a canvas element for the pie chart -->
     <div>
         <canvas id="pieChart" width="400" height="400"></canvas>
@@ -25,6 +30,8 @@
     </div>
 
     <script>
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
         const ctx = document.getElementById('pieChart').getContext('2d');
         let myPieChart;
         let itemLabels;
@@ -34,13 +41,15 @@
                 console.error('Data not loaded');
                 return;
             }
-
+            loadingIndicator.style.display = 'block';
             const filteredData = filterDataByMonth(invoiceData,selectedMonth);
            
             const top10Items = calculateTop10Items(filteredData);
+            
 
             //Update the chart with the top 10 items
             updateChart(top10Items, itemLabels);
+            loadingIndicator.style.display = 'none';
         }
         document.getElementById('filterButton').addEventListener('click', () => {
             const selectedMonth = document.getElementById('monthSelect').value;
@@ -67,6 +76,7 @@
                 });
 
                 // Default month
+                
                 updateChartByMonth(5);
             } catch (error) {
                 console.error('Error initializing chart:', error);
@@ -74,7 +84,6 @@
         }
 
         window.addEventListener('load', initializeChart);
-        window.addEventListener('load', fetchInvoiceData);
 
         function updateChart(top10ItemsData,itemLabels) {
         if (myPieChart) {
@@ -102,6 +111,5 @@
         
     </script>
 
-    
 </body>
 </html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bar chart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="fetchData.js"></script>
+    <script src="dataProcessing.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="loadingIndicator" class="hidden">
+    Loading...
+</div>
+<div>
+    <canvas id="barChartCanvas" width="400" height="400"></canvas>
+</div>
+<div>
+    <button id="filterByMonth">Filter by Month</button>
+        <select id="monthSelect">           
+            <option value="4">April</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <!-- Since there are just 5 months of invoices in API-->
+        </select>
+</div>
+<div>
+    <input type="text" id="itemInput" placeholder="Enter item name">
+    <button id="filterByItem">Filter by Item</button>
+</div>
+<script>
+
+const loadingIndicator = document.getElementById('loadingIndicator');
+const barCtx = document.getElementById('barChartCanvas').getContext('2d');
+let myBarChart;
+let realizationsData;
+
+document.getElementById('filterByMonth').addEventListener('click', () => {
+    const selectedMonth = parseInt(document.getElementById('monthSelect').value);
+    const filteredData = filterDataByMonth(realizationsData, selectedMonth);
+   
+    const { days, totalRealizations } = processRealizationsData(filteredData);
+    createBarChart(days, totalRealizations);
+});
+
+document.getElementById('filterByItem').addEventListener('click', async() => {
+    loadingIndicator.style.display = 'block';
+
+    const itemName = document.getElementById('itemInput').value;
+    const filteredData = await filterInvoicesByItemName(itemName);
+    console.log("realizations data : ", filteredData);
+    const { days, totalRealizations } = processRealizationsData(filteredData);
+    createBarChart(days, totalRealizations);
+    loadingIndicator.style.display = 'none';
+
+});
+
+function createBarChart(labels, data) {
+    if (myBarChart) {
+        myBarChart.destroy(); 
+    }
+
+    myBarChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Realization',
+                data: data, 
+                backgroundColor: 'blue', 
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        },
+    });
+}
+
+async function initializeBarChart() {
+    loadingIndicator.style.display = 'block';
+    realizationsData = await fetchAllInvoices();
+    const { days, totalRealizations } = processRealizationsData(realizationsData);
+    createBarChart(days, totalRealizations);
+    loadingIndicator.style.display = 'none';
+}
+
+window.addEventListener('load', initializeBarChart);
+
+</script>
+</body>
+</html>

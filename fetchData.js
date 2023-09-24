@@ -1,4 +1,4 @@
-    
+
         // Function to fetch data from a given URL
         async function fetchData(url) {
             const response = await fetch(url);
@@ -37,43 +37,4 @@
             }
             //console.log('Invoices:', allInvoices);
             return allInvoices;
-        }
-        async function fetchAllInvoiceRows() {
-            let nextPage = 'http://localhost:3000/api/invoice-rows';
-            let allInvoiceRows = [];
-            const data = await fetchData(nextPage);
-
-            while (nextPage) {
-                allInvoiceRows = allInvoiceRows.concat(data.results);
-                nextPage = data.next; 
-            }
-            //console.log('Invoice rows:', allInvoiceRows);
-            return allInvoiceRows;
-        }
-
-        async function fetchInvoiceData() {
-            try {
-                // Fetch invoice data
-                let invoiceData = await fetchAllInvoices();
-
-                const itemDataResponse = await fetchAllItems();
-                const itemData = itemDataResponse.items;
-                
-                const itemLabels = {};
-                itemData.forEach(item => {
-                    itemLabels[item.id.toString()] = item.name;
-                });
-
-                // Example usage: Filter data for January (0 represents January)
-                const selectedMonth = 0;
-                const filteredData = filterDataByMonth(invoiceData, selectedMonth);
-                
-                // Example usage: Calculate the top 10 items by quantity sold
-                const top10Items = calculateTop10Items(filteredData);
-                //console.log("Top10 : ", top10Items);
-                // Example usage: Update the chart with the top 10 items
-                updateChart(top10Items,itemLabels);
-            } catch (error) {
-                console.error('Error fetching invoice data:', error);
-            }
         }
